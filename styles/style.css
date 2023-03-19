@@ -1,0 +1,8 @@
+body {
+    background: linear-gradient(90deg, red, pink);
+} 
+
+h1 {
+    font-family: Arial, sans-serif;
+    color: rgb(255,99,71);
+}
