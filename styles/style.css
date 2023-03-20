@@ -6,11 +6,3 @@ h1 {
     font-family: Arial, sans-serif;
     color: rgb(255,99,71);
 }
-
-#head {
-    width: 400px;	
-    height: 100px;
-    background: #fc0;
-    outline: 2px solid #000; 
-    border: 3px solid #fff;
-}
