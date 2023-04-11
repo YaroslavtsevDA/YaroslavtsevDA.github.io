@@ -76,6 +76,8 @@
                 <p>RTR-L(config)#interface e0/1</p>
                 <p>RTR-L(config-if)#ip access-group SERVICES in</p>
                 <p>RTR-L(config-if)#exit</p>
+                <p>ip domain name int.demo.wsr</p>
+                <p>ip name-server 192.168.100.200</p>
                 <p>RTR-L(config)#do wr</p>
             </div>
             <div class="content">
@@ -139,6 +141,8 @@
                 <p>RTR-R(config)#interface e0/1</p>
                 <p>RTR-R(config-if)#ip access-group SERVICES in</p>
                 <p>RTR-R(config-if)#exit</p>
+                <p>ip domain name int.demo.wsr</p>
+                <p>ip name-server 192.168.100.200</p>
                 <p>RTR-R(config)#do wr</p>
             </div>
             <div class="content">
@@ -167,6 +171,14 @@
                 </pre>
                 <p>#echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf</p>
                 <p>#reboot</p>
+                <p>#vim /etc/bind/named.conf.options</p>
+                <pre>
+                {press i}
+                (изменяем)
+                dnssec-validation auto; -> dnssec-validation no;
+                {press Esc}
+                :wq
+                </pre>
                 <p>#vim /etc/bind/named.conf.local</p>
                 <pre>
                 {press i}
@@ -270,7 +282,18 @@
                     
                 {press Esc} :wq
                 </pre>
-                <p>#</p>
+                <p>#systemctl restart chronyd</p>
+                <p>vim /root/.smb</p>
+                <pre>
+                    username=Administrator
+                    password=P@ssw0rd
+                </pre>
+                <p>mkdir /opt/share</p>
+                <p>vim /etc/fstab</p>
+                <p>Добавляем:</p>
+                <pre>
+                    //192.168.100.200/shares /opt/share cifs user,rw,_netdev,credentials=/root/.smb 0 0
+                </pre>
                 <p class="soon">[coming soon]</p>
             </div>
             <div class="content">
@@ -301,13 +324,78 @@
                 
                 {press Esc} :wq
                 </pre>
-                <p>#</p>
+                <p>#systemctl restart chronyd</p>
+                <p>vim /root/.smb</p>
+                <pre>
+                    username=Administrator
+                    password=P@ssw0rd
+                </pre>
+                <p>mkdir /opt/share</p>
+                <p>vim /etc/fstab</p>
+                <p>Добавляем:</p>
+                <pre>
+                    //192.168.100.200/shares /opt/share cifs user,rw,_netdev,credentials=/root/.smb 0 0
+                </pre>
                 <p class="soon">[coming soon]</p>
             </div>
             <div class="content">
                 <h2>SRV</h2>
                 <p><img src="graphics/SRV-HOSTNAME.png"></p>
                 <p><img src="graphics/SRV-IPaddress.png"></p>
+                <div class="content">
+                    <h3>DNS</h3>
+                    <p>Запускаем PowerShell(от имени Администратора):</p>
+                    <p>Install-WindowsFeature -Name DNS -IncludeManagementTools</p>
+                    <p>Add-DnsServerPrimaryZone -Name "int.demo.wsr" -ZoneFile "int.demo.wsr.dns"</p>
+                    <p>Add-DnsServerPrimaryZone -NetworkId 192.168.100.0/24 -ZoneFile "int.demo.wsr.dns"</p>
+                    <p>Add-DnsServerPrimaryZone -NetworkId 172.16.100.0/24 -ZoneFile "int.demo.wsr.dns"</p>
+                    <p>Add-DnsServerForwarder -IPAddress 3.3.3.1</p>
+                    <p>Set-DnsServerRecursion -Enable $true</p>
+                    <p>Add-DnsServerResourceRecordA -IPv4Address 192.168.100.200 -Name srv -ZoneName int.demo.wsr -CreatePtr</p>
+                    <p>Add-DnsServerResourceRecordA -Name "web-l" -ZoneName "int.demo.wsr" -AllowUpdateAny -IPv4Address "192.168.100.100" -CreatePtr</p>
+                    <p>Add-DnsServerResourceRecordA -Name "web-r" -ZoneName "int.demo.wsr" -AllowUpdateAny -IPv4Address "172.16.100.100" -CreatePtr</p>
+                    <p>Add-DnsServerResourceRecordA -Name "srv" -ZoneName "int.demo.wsr" -AllowUpdateAny -IPv4Address "192.168.100.200" -CreatePtr</p>
+                    <p>Add-DnsServerResourceRecordA -Name "rtr-l" -ZoneName "int.demo.wsr" -AllowUpdateAny -IPv4Address "192.168.100.254" -CreatePtr</p>
+                    <p>Add-DnsServerResourceRecordA -Name "rtr-r" -ZoneName "int.demo.wsr" -AllowUpdateAny -IPv4Address "172.16.100.254" -CreatePtr</p>
+                    <p>Add-DnsServerResourceRecordCName -Name "webapp1" -HostNameAlias "web-l.int.demo.wsr" -ZoneName "int.demo.wsr"</p>
+                    <p>Add-DnsServerResourceRecordCName -Name "webapp2" -HostNameAlias "web-r.int.demo.wsr" -ZoneName "int.demo.wsr"</p>
+                    <p>Add-DnsServerResourceRecordCName -Name "ntp" -HostNameAlias "srv.int.demo.wsr" -ZoneName "int.demo.wsr"</p>
+                    <p>Add-DnsServerResourceRecordCName -Name "dns" -HostNameAlias "srv.int.demo.wsr" -ZoneName "int.demo.wsr"</p>
+                </div>
+                <div class="content">
+                    <h3>NTP</h3>
+                    <p>{PowerShell}</p>
+                    <p>New-NetFirewallRule -DisplayName "NTP" -Direction Inbound -LocalPort 123 -Protocol UDP -Action Allow</p>
+                    <p>Start-Service W32Time</p>
+                    <p>w32tm /config /manualpeerlist:4.4.4.1 /syncfromflags:manual /reliable:yes /update</p>
+                    <p>Restart-Service W32Time</p>
+                    <p>w32tm /resync</p>
+                </div>
+                <div class="content">
+                    <h3>Диски</h3>
+                    <p>Заходим в Disk Management(ПКМ по Пуску)</p>
+                    <p>Переводим 2 диска в состояне online</p>
+                    <p><img src="graphics/SRV-DISK-1.png"></p>
+                    <p>Инициализировать диски</p>
+                    <p><img src="graphics/SRV-DISK-2.png"></p>
+                    <P>Преобразовать в Dynamic</P>
+                    <p><img src="graphics/SRV-DISK-3.png"></p>
+                    <p><img src="graphics/SRV-DISK-4.png"></p>
+                    <p>Создать Mirrored</p>
+                    <p><img src="graphics/SRV-DISK-5.png"></p>
+                    <p><img src="graphics/SRV-DISK-6.png"></p>
+                    <p><img src="graphics/SRV-DISK-7.png"></p>
+                </div>
+                <p>В Демонстрационном экзамене возможно будет 2 варианта удаленного хранилища: iSCSI или SMB</p>
+                <div class="content">
+                    <h3>SMB</h3>
+                    <p><img src="graphics/SRV-SMB-1.png"></p>
+                    <p><img src="graphics/SRV-SMB-2.png"></p>
+                    <p><img src="graphics/SRV-SMB-3.png"></p>
+                </div>
+                <div class="content">
+                    <h3>iSCSI</h3> 
+                </div>
                 <p class="soon">[coming soon]</p>
             </div>
             <div class="content">
