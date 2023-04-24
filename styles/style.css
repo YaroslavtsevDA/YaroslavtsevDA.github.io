@@ -11,6 +11,7 @@ div {
     line-height: 200px;
     text-align: center;
     margin-bottom: 10px;
+    font-size: 2.0rem;
 }
 
 #body_center {
@@ -27,12 +28,48 @@ div {
     border-radius: 10px 10px 10px 10px;
     margin-top: 10px;
 }
+
 h2 {
     text-align: center;
 }
 h3 {
     text-align: center;
 }
-.soon{
+.soon {
     color: rgb(255, 0, 0);
+}
+pre {
+    font-size: 1.3rem;
+}
+#topNubex {
+	position: fixed;
+	right: 40px;
+	bottom: 40px;
+}
+section.blur:target {
+    animation: anim .5s;
+}
+@keyframes anim { 
+    0%, 100% { background: rgba(0,0,0,0); }
+    50% { background: rgb(255, 255, 255); }
+}
+li {
+    font-size: 1.7rem;
+}
+a {
+    color: black;
+}
+::-webkit-scrollbar {
+    width: 15px;
+}
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey; 
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: rgb(88, 88, 88); 
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #000000; 
 }

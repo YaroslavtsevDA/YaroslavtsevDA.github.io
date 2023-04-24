@@ -3,13 +3,27 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>DEMO</title>
+        <title>demo</title>
         <link rel="icon" href="graphics/favicon_1.ico" type="image/x-icon">
         <link rel="stylesheet" href="styles/style.css" type="text/css">
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     </head>
     <body>
-        <div id="head"><h1>DEMO</h1></div>
+        <div id="head"><h1>DEMOEXAM</h1></div>
+        <div id="topNubex" title="Вернуться к началу страницы"><img src="graphics/up_.png" height="50px" width="50px"></div>
         <div id="body_center">
+            <div class="content">
+                <ol>
+                    <li><a href="#RTR-L" title="RTR-L">Настройка RTR-L</a>
+                    <li><a href="#RTR-R" title="RTR-R">Настройка RTR-R</a>
+                    <li><a href="#ISP" title="ISP">Настройка ISP</a>
+                    <li><a href="#SRV" title="SRV">Настройка SRV</a>
+                    <li><a href="#WEB-L" title="WEB-L">Настройка WEB-L</a>
+                    <li><a href="#WEB-R" title="WEB-R">Настройка WEB-R</a>
+                    <li><a href="#CLI" title="CLI">Настройка CLI</a>
+                </ol>
+            </div>
+            <section id="RTR-L" class="blur">
             <div class="content">
                 <h2>RTR-L</h2>
                 <p>Router> enable</p>
@@ -80,6 +94,8 @@
                 <p>RTR-L(config)#ip name-server 192.168.100.200</p>
                 <p>RTR-L(config)#do wr</p>
             </div>
+            </section>
+            <section id="RTR-R" class="blur">
             <div class="content">
                 <h2>RTR-R</h2>
                 <p>Router> enable</p>
@@ -145,6 +161,8 @@
                 <p>RTR-R(config)#ip name-server 192.168.100.200</p>
                 <p>RTR-R(config)#do wr</p>
             </div>
+            </section>
+            <section id="ISP" class="blur">
             <div class="content">
                 <h2>ISP</h2>
                 <p>Login: root</p>
@@ -152,192 +170,118 @@
                 <p>#echo "ISP" > /etc/hostname && reboot</p>
                 <p>#vim /etc/network/interfaces</p>
                 <pre>
-                {press i}
-                auto ens3
-                auto ens4
-                auto ens5
-                iface ens3 inet static
-                    address 3.3.3.1
-                    netmask 255.255.255.0
-                    dns-nameservers 127.0.0.1
-                iface ens4 inet static
-                    address 4.4.4.1
-                    netmask 255.255.255.0
-                iface ens5 inet static
-                    address 5.5.5.1
-                    netmask 255.255.255.0
-                {press Esc}
-                :wq
+{press i}
+
+auto ens3
+auto ens4
+auto ens5
+iface ens3 inet static
+    address 3.3.3.1
+    netmask 255.255.255.0
+    dns-nameservers 127.0.0.1
+iface ens4 inet static
+    address 4.4.4.1
+    netmask 255.255.255.0
+iface ens5 inet static
+    address 5.5.5.1
+    netmask 255.255.255.0
+
+{press Esc}
+:wq
                 </pre>
                 <p>#echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf</p>
                 <p>#reboot</p>
                 <p>#vim /etc/bind/named.conf.options</p>
                 <pre>
-                {press i}
-                (изменяем)
-                dnssec-validation auto; -> dnssec-validation no;
-                {press Esc}
-                :wq
+изменяем:
+
+dnssec-validation auto; -> dnssec-validation no;
+
+{press Esc}
+:wq
                 </pre>
                 <p>#vim /etc/bind/named.conf.local</p>
                 <pre>
-                {press i}
-                zone "demo.wsr" {
-                    type master;
-                    file "/etc/bind/db.demo.wsr";
-                    allow-query { any; };
-                    allow-transfer { 4.4.4.100; }; 
-                }
-                {press Esc}
-                :wq
+
+zone "demo.wsr" {
+    type master;
+    file "/etc/bind/db.demo.wsr";
+    allow-query { any; };
+    allow-transfer { 4.4.4.100; }; 
+}
+
+{press Esc}
+:wq
                 </pre>
                 <p>#cp /etc/bind/db.empty /etc/bind/db.demo.wsr</p>
                 <p>#vim /etc/bind/db.demo.wsr</p>
-                <pre>  
-                                                                                     ->
-                $TTL	86400                                                         | $TTL    86400
-                @	IN	SOA	localhost. root.localhost. (                  | @   IN  SOA demo.wsr. root.demo.wsr. ( 
-                                  1		; Serial                              |                1		; Serial
-                             604800		; Refresh                             |           604800		; Refresh 
-                              86400		; Retry                               |            86400		; Retry
-                            2419200		; Expire                              |          2419200		; Expire 
-                              86400 )	; Negative Cache TTL                          |            86400     	; Negative Cache TTL
-                ;                                             		              | )
-                @	IN	NS	localhost.                                    | ;
-                                                                                      | @    IN  NS  isp
-                                                                                      | int  IN  NS  srv.int
-                                                                                      |
-                                                                                      | srv.int  IN  A   4.4.4.100
-                                                                                      | isp  IN  A   3.3.3.1
-                                                                                      | www  IN  A   3.3.3.1 ; ЕСЛИ НАСТРОЕН NGINX
-                                                                                      | www  IN  A   4.4.4.100
-                                                                                      | www  IN  A   5.5.5.100
-                                                                                      | internet IN  CNAME   isp
-                {press Esc}
-                :wq
+                <pre>
+
+                                                                     ->
+$TTL	86400                                                         | $TTL    86400
+@	IN	SOA	localhost. root.localhost. (                  | @   IN  SOA demo.wsr. root.demo.wsr. ( 
+                  1		; Serial                              |                1		; Serial
+             604800		; Refresh                             |           604800		; Refresh 
+              86400		; Retry                               |            86400		; Retry
+            2419200		; Expire                              |          2419200		; Expire 
+              86400 )	; Negative Cache TTL                          |            86400     	; Negative Cache TTL
+;                                             		              | )
+@	IN	NS	localhost.                                    | ;
+                                                                      | @    IN  NS  isp
+                                                                      | int  IN  NS  srv.int
+                                                                      |
+                                                                      | srv.int  IN  A   4.4.4.100
+                                                                      | isp  IN  A   3.3.3.1
+                                                                      | www  IN  A   3.3.3.1 [ЕСЛИ НАСТРОЕН NGINX!!]
+                                                                      | www  IN  A   4.4.4.100
+                                                                      | www  IN  A   5.5.5.100
+                                                                      | internet IN  CNAME   isp
+{press Esc}
+:wq
                 </pre>
                 <p>#systemctl restart {bind9 or named}</p>
                 <p>#vim /etc/chrony/chrony.conf</p>
                 <pre>
-                server 127.0.0.1 iburst trust
-                local stratum 4
-                allow 4.4.4.100
-                allow 3.3.3.10
+Удаляем все записи peer, pool, server и добавляем:
+
+server 127.0.0.1 iburst trust
+local stratum 4
+allow 4.4.4.100
+allow 3.3.3.10
                 
-                {press Esc} 
-                :wq
+{press Esc} 
+:wq
                 </pre>
                 <p>#systemctl restart {chrony or chronyd}</p>
                 <p>#cp /etc/nginx/sites-available/default /etc/nginx/sites-available/demo.wsr</p>
                 <p>#vim /etc/nginx/sites-available/demo.wsr</p>
                 <pre>
-                изменяем:
+изменяем:
                     
-                upstream www.demo.wsr {
-                    server 4.4.4.100:80 max_fails=2 fail_timeout=10s;
-                    server 5.5.5.100:80 max_fails=2 fail_timeout=10s; 
-                }
+upstream www.demo.wsr {
+    server 4.4.4.100:80 max_fails=2 fail_timeout=10s;
+    server 5.5.5.100:80 max_fails=2 fail_timeout=10s; 
+}
                 
-                server {
-                    listen 80;
+server {
+    listen 80;
                 
-                    server_name www.demo.wsr;
+    server_name www.demo.wsr;
                 
-                    location / {
-                        proxy_pass http://www.demo.wsr;
-                    }
-                }
-                {press Esc}
-                :wq
+    location / {
+        proxy_pass http://www.demo.wsr;
+    }
+}
+
+{press Esc}
+:wq
                 </pre>
                 <p>#ln -s /etc/nginx/sites-available/demo.wsr /etc/nginx/sites-enable/demo.wsr</p>
                 <p>#nginx -t</p>
                 <p>#systemctl restart nginx</p>
             </div>
-            <div class="content">
-                <h2>WEB-L</h2>
-                <p>login: root</p>
-                <p>Password: toor</p>
-                <p>#echo "WEB-L" > /etc/hostname && reboot</p>
-                <p>#vim /etc/network/interfaces</p>
-                <pre>
-                {press i}
-                auto ens3
-                iface ens3 inet static
-                  address 192.168.100.100
-                  netmask 255.255.255.0
-                  dns-nameservers 192.168.100.200
-                  gateway 192.168.100.254
-                {press Esc}
-                :wq
-                </pre>
-                <p>#reboot
-                <p>#mount -o loop /dev/cdrom /media/cdrom 
-                <p>#docker image load -i /media/cdrom/appdocker0.zip
-                <p>#docker run -p 5000:5000 -d appdocker0:latest
-                <p>#vim /etc/chrony/chrony.conf
-                <pre>
-                
-                server 192.168.100.200 iburst
-                    
-                {press Esc} :wq
-                </pre>
-                <p>#systemctl restart chronyd</p>
-                <p>vim /root/.smb</p>
-                <pre>
-                    username=Administrator
-                    password=P@ssw0rd
-                </pre>
-                <p>mkdir /opt/share</p>
-                <p>vim /etc/fstab</p>
-                <p>Добавляем:</p>
-                <pre>
-                    //192.168.100.200/shares /opt/share cifs user,rw,_netdev,credentials=/root/.smb 0 0
-                </pre>
-                <p class="soon">[coming soon]</p>
-            </div>
-            <div class="content">
-                <h2>WEB-R</h2>
-                <p>login: root</p>
-                <p>Password: toor</p>
-                <p>#echo "WEB-R" > /etc/hostname && reboot</p>
-                <p>#vim /etc/network/interfaces</p>
-                <pre>
-                {press i}
-                auto ens3
-                iface ens3 inet static
-                    address 172.16.100.100
-                    netmask 255.255.255.0
-                    dns-nameservers 192.168.100.200
-                    gateway 172.16.100.254
-                {press Esc}
-                :wq
-                </pre>
-                <p>#reboot
-                <p>#mount -o loop /dev/cdrom /media/cdrom 
-                <p>#docker image load -i /media/cdrom/appdocker0.zip
-                <p>#docker run -p 5000:5000 -d appdocker0:latest
-                <p>#vim /etc/chrony/chrony.conf
-                <pre>
-            
-                server 192.168.100.200 iburst
-                
-                {press Esc} :wq
-                </pre>
-                <p>#systemctl restart chronyd</p>
-                <p>vim /root/.smb</p>
-                <pre>
-                    username=Administrator
-                    password=P@ssw0rd
-                </pre>
-                <p>mkdir /opt/share</p>
-                <p>vim /etc/fstab</p>
-                <p>Добавляем:</p>
-                <pre>
-                    //192.168.100.200/shares /opt/share cifs user,rw,_netdev,credentials=/root/.smb 0 0
-                </pre>
-                <p class="soon">[coming soon]</p>
-            </div>
+            </section>
+            <section id="SRV" class="blur">
             <div class="content">
                 <h2>SRV</h2>
                 <p><img src="graphics/SRV-HOSTNAME.png"></p>
@@ -364,7 +308,7 @@
                 </div>
                 <div class="content">
                     <h3>NTP</h3>
-                    <p>{PowerShell}</p>
+                    <p>[PowerShell]</p>
                     <p>New-NetFirewallRule -DisplayName "NTP" -Direction Inbound -LocalPort 123 -Protocol UDP -Action Allow</p>
                     <p>Start-Service W32Time</p>
                     <p>w32tm /config /manualpeerlist:4.4.4.1 /syncfromflags:manual /reliable:yes /update</p>
@@ -388,7 +332,7 @@
                 </div>
                 <p>В Демонстрационном экзамене возможно будет 2 варианта удаленного хранилища: iSCSI или SMB</p>
                 <div class="content">
-                    <h3>SMB</h3>
+                    <h3>SMB server</h3>
                     <p><img src="graphics/SRV-SMB-1.png"></p>
                     <p><img src="graphics/SRV-SMB-2.png"></p>
                     <p><img src="graphics/SRV-SMB-3.png"></p>
@@ -398,10 +342,131 @@
                 </div>
                 <p class="soon">[coming soon]</p>
             </div>
+            </section>
+            <section id="WEB-L" class="blur">
+            <div class="content">
+                <h2>WEB-L</h2>
+                <p>login: root</p>
+                <p>Password: toor</p>
+                <p>#echo "WEB-L" > /etc/hostname && reboot</p>
+                <p>#vim /etc/network/interfaces</p>
+                <pre>
+auto ens3
+iface ens3 inet static
+    address 192.168.100.100
+    netmask 255.255.255.0
+    dns-nameservers 192.168.100.200
+    gateway 192.168.100.254
+
+{press Esc}
+:wq
+                </pre>
+                <p>#reboot</p>
+                <p>#mount -o loop /dev/cdrom /media/cdrom</p> 
+                <p>#docker image load -i /media/cdrom/appdocker0.zip</p>
+                <p>#docker run -p 5000:5000 -d appdocker0:latest</p>
+                <p>#vim /etc/chrony/chrony.conf</p>
+                <pre>
+Удаляем все записи peer, pool, server и добавляем:
+
+server 192.168.100.200 iburst
+                    
+{press Esc}
+:wq
+                </pre>
+                <div class="content">
+                    <h3>SMB client</h3>
+                    <p>#vim /root/.smb</p>
+                    <pre>
+username=Administrator
+password=P@ssw0rd
+
+{press Esc}
+:wq
+                    </pre>
+                    <p>#mkdir /opt/share</p>
+                    <p>#vim /etc/fstab</p>
+                    <pre>
+Добавляем:
+
+//192.168.100.200/shares /opt/share cifs user,rw,_netdev,credentials=/root/.smb 0 0
+
+{press Esc}
+:wq
+                    </pre>
+                </div>
+                <div class="content">
+                    <h3>iSCSI</h3>
+                </div>
+                <p class="soon">[coming soon]</p>
+            </div>
+            </section>
+            <section id="WEB-R" class="blur">
+            <div class="content">
+                <h2>WEB-R</h2>
+                <p>login: root</p>
+                <p>Password: toor</p>
+                <p>#echo "WEB-R" > /etc/hostname && reboot</p>
+                <p>#vim /etc/network/interfaces</p>
+                <pre>
+auto ens3
+iface ens3 inet static
+    address 172.16.100.100
+    netmask 255.255.255.0
+    dns-nameservers 192.168.100.200
+    gateway 172.16.100.254
+
+{press Esc}
+:wq
+                </pre>
+                <p>#reboot</p>
+                <p>#mount -o loop /dev/cdrom /media/cdrom</p>
+                <p>#docker image load -i /media/cdrom/appdocker0.zip</p>
+                <p>#docker run -p 5000:5000 -d appdocker0:latest</p>
+                <p>#vim /etc/chrony/chrony.conf</p>
+                <pre>
+Удаляем все записи peer, pool, server и добавляем:
+
+server 192.168.100.200 iburst
+                
+{press Esc}
+:wq
+                </pre>
+                <p>#systemctl restart chronyd</p>
+                <div class="content">
+                    <h3>SMB</h3>
+                    <p>#vim /root/.smb</p>
+                    <pre>
+username=Administrator
+password=P@ssw0rd
+
+{press Esc}
+:wq
+                    </pre>
+                    <p>#mkdir /opt/share</p>
+                    <p>#vim /etc/fstab</p>
+                    <pre>
+Добавляем:
+
+//192.168.100.200/shares /opt/share cifs user,rw,_netdev,credentials=/root/.smb 0 0
+
+{press Esc}
+:wq
+                    </pre>
+                </div>
+                <div class="content">
+                    <h3>iSCSI</h3>
+                </div>
+                <p class="soon">[coming soon]</p>
+            </div>
+            </section>
+            <section id="CLI" class="blur"></section>
             <div class="content">
                 <h2>CLI</h2>
                 <p class="soon">[coming soon]</p>
             </div>
+            </section>
         </div>
     </body>
+    <script src="js/script.js"></script>
 </html>
