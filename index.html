@@ -208,7 +208,7 @@ zone "demo.wsr" {
     file "/etc/bind/db.demo.wsr";
     allow-query { any; };
     allow-transfer { 4.4.4.100; }; 
-}
+};
 
 {press Esc}
 :wq
@@ -295,7 +295,6 @@ server {
                     <p>Add-DnsServerPrimaryZone -NetworkId 172.16.100.0/24 -ZoneFile "int.demo.wsr.dns"</p>
                     <p>Add-DnsServerForwarder -IPAddress 3.3.3.1</p>
                     <p>Set-DnsServerRecursion -Enable $true</p>
-                    <p>Add-DnsServerResourceRecordA -IPv4Address 192.168.100.200 -Name srv -ZoneName int.demo.wsr -CreatePtr</p>
                     <p>Add-DnsServerResourceRecordA -Name "web-l" -ZoneName "int.demo.wsr" -AllowUpdateAny -IPv4Address "192.168.100.100" -CreatePtr</p>
                     <p>Add-DnsServerResourceRecordA -Name "web-r" -ZoneName "int.demo.wsr" -AllowUpdateAny -IPv4Address "172.16.100.100" -CreatePtr</p>
                     <p>Add-DnsServerResourceRecordA -Name "srv" -ZoneName "int.demo.wsr" -AllowUpdateAny -IPv4Address "192.168.100.200" -CreatePtr</p>
